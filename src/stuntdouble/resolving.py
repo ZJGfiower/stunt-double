@@ -35,6 +35,10 @@ INPUT_REF_PATTERN = re.compile(r"^input\.(\w+)(?:\s*\|\s*default\((.+)\))?$")
 CONFIG_REF_PATTERN = re.compile(r"^config\.(\w+)(?:\s*\|\s*default\((.+)\))?$")
 FUNCTION_PATTERN = re.compile(r"^(\w+)\(([^)]*)\)$")
 
+# Sentinel used to distinguish "resolver did not handle this expression"
+# from "resolver handled it and produced None".
+_UNRESOLVED = object()
+
 
 @dataclass
 class ResolverContext:
@@ -143,7 +147,7 @@ class ValueResolver:
 
         for resolver in resolvers:
             result = resolver(expr, context)
-            if result is not None:
+            if result is not _UNRESOLVED:
                 return result
 
         # Unknown expression - return as-is with warning
@@ -197,7 +201,7 @@ class ValueResolver:
         if boundary_match:
             return self._resolve_boundary(expr, base).isoformat()
 
-        return None
+        return _UNRESOLVED
 
     def _get_timedelta(self, amount: int, unit: str) -> timedelta:
         """
@@ -284,7 +288,7 @@ class ValueResolver:
         """
         match = INPUT_REF_PATTERN.match(expr)
         if not match:
-            return None
+            return _UNRESOLVED
 
         field_name = match.group(1)
         default_value = match.group(2)
@@ -315,7 +319,7 @@ class ValueResolver:
         """
         match = CONFIG_REF_PATTERN.match(expr)
         if not match:
-            return None
+            return _UNRESOLVED
 
         field_name = match.group(1)
         default_value = match.group(2)
@@ -354,7 +358,7 @@ class ValueResolver:
         # Function-style generators
         func_match = FUNCTION_PATTERN.match(expr)
         if not func_match:
-            return None
+            return _UNRESOLVED
 
         func_name = func_match.group(1)
         args_str = func_match.group(2)
@@ -377,7 +381,7 @@ class ValueResolver:
                 if args:
                     return random.choice(args)
                 logger.warning("choice requires at least 1 argument")
-                return None
+                return _UNRESOLVED
 
             case "sequence":
                 prefix = args[0] if args else "SEQ"
@@ -392,7 +396,7 @@ class ValueResolver:
                 return "".join(random.choices(chars, k=length))
 
             case _:
-                return None
+                return _UNRESOLVED
 
     def _parse_args(self, args_str: str) -> list[Any]:
         """

@@ -226,6 +226,42 @@ class TestValueResolverInputRefs:
         assert result["count"] == 42
         assert result["active"] is True
 
+    def test_input_ref_none_value_resolves_to_none(self):
+        """{{input.field}} with a None value resolves to None, not the literal placeholder."""
+        resolver = ValueResolver()
+        ctx = ResolverContext(input_data={"note": None})
+
+        result = resolver.resolve_dynamic_values({"note": "{{input.note}}"}, ctx)
+
+        assert result == {"note": None}
+
+    def test_input_ref_default_null_resolves_to_none(self):
+        """{{input.field | default(null)}} resolves to None when the field is missing."""
+        resolver = ValueResolver()
+        ctx = ResolverContext(input_data={})
+
+        result = resolver.resolve_dynamic_values({"note": "{{input.note | default(null)}}"}, ctx)
+
+        assert result == {"note": None}
+
+    def test_input_ref_default_none_resolves_to_none(self):
+        """{{input.field | default(none)}} resolves to None when the field is missing."""
+        resolver = ValueResolver()
+        ctx = ResolverContext(input_data={})
+
+        result = resolver.resolve_dynamic_values({"note": "{{input.note | default(none)}}"}, ctx)
+
+        assert result == {"note": None}
+
+    def test_input_ref_false_and_zero_still_resolve(self):
+        """False and 0 input values resolve correctly (not treated as unresolved)."""
+        resolver = ValueResolver()
+        ctx = ResolverContext(input_data={"flag": False, "count": 0})
+
+        result = resolver.resolve_dynamic_values({"flag": "{{input.flag}}", "count": "{{input.count}}"}, ctx)
+
+        assert result == {"flag": False, "count": 0}
+
 
 class TestValueResolverGenerators:
     """Test generator function placeholder resolution."""
