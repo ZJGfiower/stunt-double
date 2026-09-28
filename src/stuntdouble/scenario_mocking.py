@@ -56,7 +56,8 @@ class DataDrivenMockFactory:
     Args:
         tool_name: Name of the tool (key in scenario_metadata["mocks"])
         fallback: Value returned when no case matches. If None and no match,
-                  returns the first case's output as a last resort.
+                  raises InputNotMatchedError (add a catch-all case or set
+                  fallback=).
         echo_input: If True, the mock callable returns the input kwargs as-is
                     when no cases match. Useful for passthrough tools.
 

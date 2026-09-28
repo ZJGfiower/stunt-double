@@ -154,7 +154,7 @@ class ValueResolver:
         logger.warning(f"Unknown placeholder expression: {{{{{expr}}}}}")
         return f"{{{{{expr}}}}}"
 
-    def _try_timestamp(self, expr: str, context: ResolverContext) -> Any | None:
+    def _try_timestamp(self, expr: str, context: ResolverContext) -> Any:
         """
         Try to resolve timestamp expressions.
 
@@ -168,7 +168,7 @@ class ValueResolver:
             context: Resolution context
 
         Returns:
-            ISO timestamp string or None if not a timestamp expr
+            ISO timestamp string, or _UNRESOLVED if not a timestamp expr
         """
         base = context.base_time
 
@@ -271,7 +271,7 @@ class ValueResolver:
             case _:
                 return base
 
-    def _try_input_ref(self, expr: str, context: ResolverContext) -> Any | None:
+    def _try_input_ref(self, expr: str, context: ResolverContext) -> Any:
         """
         Try to resolve input references.
 
@@ -284,7 +284,7 @@ class ValueResolver:
             context: Resolution context
 
         Returns:
-            Input value or None if not an input ref
+            Input value (possibly None), or _UNRESOLVED if not an input ref
         """
         match = INPUT_REF_PATTERN.match(expr)
         if not match:
@@ -302,7 +302,7 @@ class ValueResolver:
         logger.debug(f"Input field '{field_name}' not found and no default provided")
         return f"<{field_name}>"
 
-    def _try_config_ref(self, expr: str, context: ResolverContext) -> Any | None:
+    def _try_config_ref(self, expr: str, context: ResolverContext) -> Any:
         """
         Try to resolve config references.
 
@@ -315,7 +315,7 @@ class ValueResolver:
             context: Resolution context
 
         Returns:
-            Config value or None if not a config ref
+            Config value (possibly None), or _UNRESOLVED if not a config ref
         """
         match = CONFIG_REF_PATTERN.match(expr)
         if not match:
@@ -333,7 +333,7 @@ class ValueResolver:
         logger.debug(f"Config field '{field_name}' not found and no default provided")
         return f"<{field_name}>"
 
-    def _try_generator(self, expr: str, context: ResolverContext) -> Any | None:
+    def _try_generator(self, expr: str, context: ResolverContext) -> Any:
         """
         Try to resolve generator functions.
 
@@ -349,7 +349,7 @@ class ValueResolver:
             context: Resolution context
 
         Returns:
-            Generated value or None if not a generator
+            Generated value, or _UNRESOLVED if not a generator
         """
         # Simple generators (no args)
         if expr == "uuid":

@@ -75,7 +75,7 @@ def create_mockable_tool_wrapper(
             signatures match the original tool signatures at runtime.
         validate_signatures: If True (default) and tools are provided, validates
             mock signatures at runtime. On validation failure, logs an error
-            and falls back to the real tool.
+            and raises SignatureMismatchError.
         recorder: Optional CallRecorder for recording tool calls. When provided,
             all tool calls (mocked and real) will be recorded for later
             verification in tests.
@@ -133,7 +133,7 @@ def create_mockable_tool_wrapper(
         ...     tools=all_tools,
         ...     validate_signatures=True,
         ... )
-        >>> # If mock signature doesn't match tool -> logs error, uses real tool
+        >>> # If mock signature doesn't match tool -> logs error, raises SignatureMismatchError
     """
     # Build tools lookup map for runtime signature validation
     tools_by_name: dict[str, BaseTool] = {}
