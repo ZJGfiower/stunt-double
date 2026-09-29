@@ -32,11 +32,13 @@ file records notable unreleased changes and the initial release.
 - **Documentation**: corrected the module-structure map and dependency "used by"
   paths (there is no `stuntdouble/langgraph/` or top-level `mcp/` package — the
   layout is flat with MCP under `mirroring/`), fixed overstated Python-version
-  support (3.12–3.14), replaced a fabricated dev-dependency block, and fixed a
+  support (3.12–3.13), replaced a fabricated dev-dependency block, and fixed a
   `NameError` in a context-aware-mocks example.
 
 ### Changed
 
+- Python 3.14 is now tested in CI (unit and e2e matrices) and listed in the
+  package classifiers.
 - CI now enforces `mypy` type checking and `ruff format --check` in addition to
   `ruff check`; the source tree is fully type-clean under mypy.
 - Refreshed `uv.lock` to match the declared `requires-python = ">=3.12"` (it had
