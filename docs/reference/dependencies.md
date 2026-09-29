@@ -129,6 +129,7 @@ pip install "stuntdouble[mcp]"
 StuntDouble supports:
 - Python 3.12
 - Python 3.13
+- Python 3.14
 
 ### LangChain Ecosystem
 
